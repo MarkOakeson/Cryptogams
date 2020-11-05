@@ -96,9 +96,9 @@ public class CryptogramController extends Observable{
      * Returns:
      * @return a String of the user's decrypted code so far
      */
-	public void getUsersProgress() { 
+	public String getUsersProgress() { 
 		/* for the view to display */ 
-		System.out.println(model.getPro());
+		return model.getPro();
 	} 
 	
 	
