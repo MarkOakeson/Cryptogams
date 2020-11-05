@@ -19,27 +19,80 @@ public class CryptogramGUIView extends Application implements Observer {
 	}
 	public static void main(String[] args) {
 		System.out.println("MAIN");
-//		while(!control.isGameOver()) {
-//			launch(args);
-//		}
 		launch(args);
 	}
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		System.out.println("Start");
-
 		BorderPane main = new BorderPane();
+		GridPane rightSide = new GridPane();
 
-		GridPane gridPane = setCryptogramText();
-		main.setCenter(gridPane);
+		GridPane cryptoText = setCryptogramText();
+	
+		setNewPuzzle(rightSide);
+		setHint(rightSide);
 		
-		GridPane gPane = setRightSideStage();
-		// Check if button pressed
-		main.setRight(gPane);
+		main.setCenter(cryptoText);
+		main.setRight(rightSide);
+		
 		Scene scene = new Scene(main, 900, 400);
 		primaryStage.setTitle("FX Test");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+	}
+	
+	
+	private void setHint(GridPane rightSide) {
+		Button hintButton = new Button();
+		hintButton.setText("Hint");
+		rightSide.add(hintButton, 0, 1);
+		CheckBox checkBox = new CheckBox("Show Hints");
+		rightSide.add(checkBox, 0, 2);
+		GridPane frequency = new GridPane();
+		String freq = control.getFreq();
+		System.out.println(freq);
+		int col = 0;
+		int row = 0;
+		int letterIndex = 0;
+		int countIndex = 3;
+		int counter = 0;
+		for( int i = 0; i < 26; i++) {
+			String letter = freq.substring(letterIndex,letterIndex + 1) + "  ";
+			letter += freq.substring(countIndex,countIndex+1);
+			Label letterFreq = new Label(letter);
+			frequency.add(letterFreq, col, row);
+			letterIndex = letterIndex + 5;
+			countIndex = countIndex + 5;
+			counter++;
+			if(counter == 7) {
+				letterIndex = letterIndex + 1;
+				countIndex = countIndex + 1;
+				counter = 0;
+			}
+			row++;
+			if(i == 12) {
+				col = col + 3;
+				row = 0;
+			}
+		}
+		frequency.setHgap(10);
+		frequency.setVisible(false);
+		rightSide.add(frequency,  0,  3);
+		checkBox.setOnAction((event) -> {
+			if(checkBox.isSelected()) {
+				frequency.setVisible(true);
+			}
+			else {
+				frequency.setVisible(false);
+			}
+		});
+		
+	}
+	
+	private void setNewPuzzle(GridPane rightSide) {
+		Button newPuzzle = new Button();
+		newPuzzle.setText("New Puzzle");
+		rightSide.add(newPuzzle, 0, 0);
 	}
 	
 	
@@ -87,71 +140,12 @@ public class CryptogramGUIView extends Application implements Observer {
 	
 	
 	
-	public GridPane setRightSideStage() {
-		GridPane mainPane = new GridPane();
-		Button newPuzzle = new Button();
-		newPuzzle.setText("New Puzzle");
-		mainPane.add(newPuzzle, 0, 0);
-		
-		Button hintButton = new Button();
-		hintButton.setText("Hint");
-		mainPane.add(hintButton, 0, 1);
-		
-		
-		
-		CheckBox checkBox = new CheckBox("Show Hints");
-		mainPane.add(checkBox, 0, 2);
-		
-		GridPane frequency = new GridPane();
-		String freq = control.getFreq();
-		System.out.println(freq);
-		int col = 0;
-		int row = 0;
-		int letterIndex = 0;
-		int countIndex = 3;
-		int counter = 0;
-		for( int i = 0; i < 26; i++) {
-			String letter = freq.substring(letterIndex,letterIndex + 1) + "  ";
-			letter += freq.substring(countIndex,countIndex+1);
-			Label letterFreq = new Label(letter);
-			frequency.add(letterFreq, col, row);
-			letterIndex = letterIndex + 5;
-			countIndex = countIndex + 5;
-			counter++;
-			if(counter == 7) {
-				letterIndex = letterIndex + 1;
-				countIndex = countIndex + 1;
-				counter = 0;
-			}
-			row++;
-			if(i == 12) {
-				col = col + 3;
-				row = 0;
-			}
-		}
-		frequency.setHgap(10);
-		frequency.setVisible(false);
-		
-		mainPane.add(frequency,  0,  3);
-		checkBox.setOnAction((event) -> {
-			if(checkBox.isSelected()) {
-				frequency.setVisible(true);
-			}
-			else {
-				frequency.setVisible(false);
-			}
-		});
-		return mainPane;
-	}
-	
-	public void update(Observable o, String[] arg) {
-		String toRemove = arg[0];
-		String toReplace = arg[1];
-		control.makeReplacement(toRemove, toReplace);
-	}
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
+		String[] arr = (String[]) arg;
+		String toRemove =  arr[0];
+		String toReplace = arr[1];
+		control.makeReplacement(toRemove, toReplace);
 		
 	}
 	
