@@ -22,6 +22,8 @@
 
 import java.util.Scanner;
 
+import javafx.application.Application;
+
 public class Cryptograms {
 	
 	/**
@@ -40,40 +42,14 @@ public class Cryptograms {
      */
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
-		CryptogramController control = new CryptogramController(new CryptogramModel());
-		while (!control.isGameOver() ) {
-			control.getUsersProgress();
-			System.out.println("Enter a command (type help to see commands):");
-			String[] line = scanner.nextLine().split(" ");
-			if(line[0].toUpperCase().equals("REPLACE")) {
-				control.makeReplacement(line[1], line[3]);
-			}
-			else if(line.length == 3) {
-				control.makeReplacement(line[0],line[2]);
-			}
-			else if(line[0].toUpperCase().equals("FREQ") ) {
-				control.getFreq();
-			}
-			else if(line[0].toUpperCase().equals("HINT")) {
-				control.giveHint();
-			}
-			else if(line[0].toUpperCase().equals("EXIT")) {
-				break;
-			}
-			else if(line[0].toUpperCase().equals("HELP") ) {
-				control.giveHelp();
-			}
-			else {
-				System.out.print("Invalid Command! Try again");
-			}
-
+		System.out.println("Enter the desired view: ");
+		String[] line = scanner.nextLine().split(" ");
+		if(line[0].toUpperCase().equals("-TEXT")) {
+			CryptogramTextView textView = new CryptogramTextView();
+			textView.playGame();
 		}
-		if(control.isGameOver()) {
-			System.out.println("You got it!");
-		}
-		else {
-			System.out.println("The game has ended early.");
-			System.exit(0);
+		else if(line[0].toUpperCase().equals("-WINDOW")) {
+			Application.launch(CryptogramGUIView.class, args);
 		}
 	}
 

@@ -1,3 +1,5 @@
+import java.util.Observable;
+
 /**
 * @author Mark Oakeson
 * FILE: CryptogramController.java
@@ -17,7 +19,7 @@
 * 	the functions in CryptogramsModel
 */
 
-public class CryptogramController{
+public class CryptogramController extends Observable{
 	private CryptogramModel model;
 	
 	/**
@@ -110,8 +112,8 @@ public class CryptogramController{
      * Returns:
      * @return a String of the number of times each letter appears in the encrypted quote
      */
-	public void getFreq() {
-		System.out.println(model.getFrequency());
+	public String getFreq() {
+		return model.getFrequency();
 	}
 	
 	/**

@@ -1,13 +1,12 @@
 /**
-* @author: Mark Oakeson
+* AUTHOR: Mark Oakeson
 * FILE: CryptogramModel.java
 * @version ASSIGNMENT: Project 1 - Cryptography
 * COURSE: CSc 335; Fall 2020
 * PURPOSE: The purpose of this file is to be the model for the Cryptography project.  This file
-* contains the code for creating the encryption ArrayMap, reading in the quotes from "quotes.txt",
+* contains the code for creating the encryption HashMap, reading in the quotes from "quotes.txt",
 * randomly picking a quote, and encrypting that quote.  It also contains the original quote as a 
-* String and keeps track of the user's current guesses and the guessed string.  The backing "map"
-* for this project was implemented with an ArrayMap
+* String and keeps track of the user's current guesses and the guessed string.
 * 
 *
 * @usage: 
@@ -18,23 +17,22 @@
 */
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.Observable;
 import java.util.Scanner;
-import java.util.Set;
 
-public class CryptogramModel {
+
+public class CryptogramModel extends Observable {
 	
 	
-	private ArrayMap<Character, Character> keyMap;
-	private ArrayMap<Character, Character> userMap;
+	private HashMap<Character, Character> keyMap;
+	private HashMap<Character, Character> userMap;
 	private String answerStr;
 	protected String encStr;
-	private ArrayMap<Character, Integer> freq;
+	private HashMap<Character, Integer> freq;
 	
 	
 	/**
@@ -57,9 +55,9 @@ public class CryptogramModel {
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 		}
-    	this.freq = new ArrayMap<Character, Integer>();
-    	//this.answerStr = fileScanner.nextLine();
-    	this.answerStr = getRandomLine(fileScanner);
+    	this.freq = new HashMap<Character, Integer>();
+    	this.answerStr = fileScanner.nextLine();
+    	//this.answerStr = getRandomLine(fileScanner);
     	this.keyMap = keyMapGenerator();
     	boolean check = checkDuplicates();
     	while(check) {
@@ -67,7 +65,7 @@ public class CryptogramModel {
     		check = checkDuplicates();
     	}
     	//System.out.println(check);
-    	this.userMap = new ArrayMap<Character, Character>();
+    	this.userMap = new HashMap<Character, Character>();
     	this.encStr = "";
     	stringEncrypt();
 	}
@@ -81,11 +79,11 @@ public class CryptogramModel {
      * None
      *
      * Returns:
-     * @return ArrayMap An ArrayMap of the encryption keys, stored as keyMap
+     * @return HashMap A HashMap of the encryption keys, stored as keyMap
      */
-    private ArrayMap<Character, Character> keyMapGenerator() {
+    private HashMap<Character, Character> keyMapGenerator() {
     	ArrayList<Character> letters = new ArrayList<Character>();
-    	ArrayMap<Character, Character> map = new ArrayMap<Character, Character>();
+    	HashMap<Character, Character> map = new HashMap<Character, Character>();
     	String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     	for(int i = 0; i < str.length(); i++) {
     		char toAdd = str.charAt(i);
@@ -155,38 +153,17 @@ public class CryptogramModel {
      * Nothing, but updates the encStr
      **/
     private void stringEncrypt() {
-    	String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    	Set<Entry<Character, Character>> keySet = keyMap.entrySet();
     	for(int i = 0; i < this.answerStr.length(); i++) {
-    		for(int a = 0; a < str.length(); a++) {
-    			char c = Character.toUpperCase(answerStr.charAt(i));
-    			SimpleEntry entry = new SimpleEntry(c, str.charAt(a));
-    			if(keySet.contains(entry)) {
-    				encStr += str.charAt(a);
-    				//break;
-    			}
+    		char c = Character.toUpperCase(answerStr.charAt(i));
+    		if(keyMap.containsKey(c)) {
+    			encStr += keyMap.get(c);
+    			int val = freq.get(keyMap.get(c));
+				val++;
+				freq.put(keyMap.get(c), val);
     		}
-    		if(answerStr.charAt(i)== ',') {
-    			encStr += ",";
-			}
-			else if(answerStr.charAt(i)== '.') {
-				encStr += ".";
-			}
-			else if(answerStr.charAt(i)== ' ') {
-				encStr += " ";
-			}
-			else if(answerStr.charAt(i)== '-') {
-				encStr += "-";
-			}
-			else if(answerStr.charAt(i)== '?') {
-				encStr += "?";
-			}
-			else if(answerStr.charAt(i)== '!') {
-				encStr += "!";
-			}
-			else if(answerStr.charAt(i)== '\'') {
-				encStr += "\'";
-			}
+    		else {
+    			encStr += answerStr.charAt(i);
+    		}
     	} 
     }
     
@@ -236,7 +213,7 @@ public class CryptogramModel {
 	
 	/**
      * Purpose: Method returns the user's attempted decrypted quote by checking the
-     * user ArrayMap keySEt and the key ArrayMap keySet
+     * user HashMap and the key hashMap
      * 
      * Parameters:
      * None
@@ -248,47 +225,22 @@ public class CryptogramModel {
 	/* return the decrypted string with the guessed replacements or
 	spaces */ 
 		String retval = "";
-		Set<Entry<Character, Character>> userSet = userMap.entrySet();
-		String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for(int i = 0; i < encStr.length(); i++) {
-			boolean added = false;
-			for(int a = 0; a < str.length()-1; a++) {
-				SimpleEntry entry = new SimpleEntry(encStr.charAt(i), str.charAt(a));
-				if(userSet.contains(entry)) {
-					retval += str.charAt(a);
-					added = true;
-					//break;
-				}
+			if(userMap.containsKey(encStr.charAt(i))){
+				retval += userMap.get(encStr.charAt(i));
 			}
-			if(added == false) {
-				if(encStr.charAt(i)== ',') {
-					retval += ",";
-				}
-				else if(encStr.charAt(i)== '.') {
-					retval += ".";
-				}
-				else if(encStr.charAt(i)== '-') {
-					retval += "-";
-				}
-				else if(encStr.charAt(i)== '?') {
-					retval += "?";
-				}
-				else if(encStr.charAt(i)== '!') {
-					retval += "!";
-				}
-				else if(encStr.charAt(i)== '\'') {
-					retval += "\'";
-				}
-				else {
+			else {
+				if(keyMap.containsKey(encStr.charAt(i))) {
 					retval += " ";
 				}
+				else {
+					retval += encStr.charAt(i);
+				}
 			}
-			
 		}
 		return retval;
 		}
 	
-
 	
 	
 	/**
@@ -341,26 +293,26 @@ public class CryptogramModel {
      *  @return a String stating a letter to remove and the letter to replace it
      */
 	public void hint() {
-		String retval = "";
-		String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		boolean hintGiven = false;
-		Set<Entry<Character, Character>> userSet = userMap.entrySet();
-		Set<Entry<Character, Character>> keySet = keyMap.entrySet();
-		for(int i = 0; i < encStr.length(); i++) {
-			for(int a = 0; a < str.length(); a++) {
-				if(hintGiven) {
+		HashSet<Character> set = getAnswerSetOfChars();
+		for(Character c: keyMap.keySet()) {
+			if(set.contains(c)) {
+				if(!userMap.containsValue(c)) {
+					System.out.println("Hint: Replace "+ keyMap.get(c)+" with " +c);
 					return;
-				}
-				SimpleEntry entry1 = new SimpleEntry(str.charAt(a), encStr.charAt(i));
-				SimpleEntry entry2 = new SimpleEntry(encStr.charAt(i), str.charAt(a));
-				if(userSet.contains(entry2) == false) {
-					if(keySet.contains(entry1)) {
-						System.out.println("Hint: Replace "+ encStr.charAt(i)+" with " +str.charAt(a));
-						hintGiven = true;
-					}
 				}
 			}
 		}
+	}
+	
+	private HashSet<Character> getAnswerSetOfChars(){
+		HashSet<Character> set = new HashSet<Character>();
+		for(int i = 0; i < answerStr.length(); i++) {
+			Character c = Character.toUpperCase(answerStr.charAt(i));
+			if(!set.contains(answerStr.charAt(i))) {
+				set.add(c);
+			}	
+		}
+		return set;
 	}
 	
 	/**
@@ -383,11 +335,6 @@ public class CryptogramModel {
 		punctuation.add(',');
 		punctuation.add('.');
 		punctuation.add(' ');
-		punctuation.add('\'');
-		punctuation.add('?');
-		punctuation.add('!');
-		
-		String attempt = getDecryptedString();
 		for(int i = 0; i < encStr.length(); i++) {
 			if(encStr.charAt(start) == ' ') {
 				start++;
@@ -396,14 +343,14 @@ public class CryptogramModel {
 				count = i;
 			}
 			else if((i - start) > 80) {
-				retval += attempt.substring(start+1, count)+ "\n";
+				retval += getDecryptedString().substring(start+1, count)+ "\n";
 				retval += encStr.substring(start+1, count) + "\n\n";
 				
 				start = count;
 				count = 0;
 			}
 		}
-		retval += attempt.substring(start)+"\n";
+		retval += getDecryptedString().substring(start)+"\n";
 		retval += encStr.substring(start);
 		return retval;
 	}
