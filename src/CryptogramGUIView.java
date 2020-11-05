@@ -86,20 +86,21 @@ public class CryptogramGUIView extends Application implements Observer {
 	}
 	
 	
+	
 	public GridPane setRightSideStage() {
-		GridPane gPane = new GridPane();
+		GridPane mainPane = new GridPane();
 		Button newPuzzle = new Button();
 		newPuzzle.setText("New Puzzle");
-		gPane.add(newPuzzle, 0, 0);
+		mainPane.add(newPuzzle, 0, 0);
 		
-		Button hint = new Button();
-		hint.setText("Hint");
-		gPane.add(hint, 0, 1);
+		Button hintButton = new Button();
+		hintButton.setText("Hint");
+		mainPane.add(hintButton, 0, 1);
 		
 		
 		
-		CheckBox checkbox = new CheckBox("Show Hints");
-		gPane.add(checkbox, 0, 2);
+		CheckBox checkBox = new CheckBox("Show Hints");
+		mainPane.add(checkBox, 0, 2);
 		
 		GridPane frequency = new GridPane();
 		String freq = control.getFreq();
@@ -130,12 +131,17 @@ public class CryptogramGUIView extends Application implements Observer {
 		}
 		frequency.setHgap(10);
 		frequency.setVisible(false);
-		hint.setOnAction((event) -> {
-			frequency.setVisible(true);
-		});
-		gPane.add(frequency,  0,  3);
 		
-		return gPane;
+		mainPane.add(frequency,  0,  3);
+		checkBox.setOnAction((event) -> {
+			if(checkBox.isSelected()) {
+				frequency.setVisible(true);
+			}
+			else {
+				frequency.setVisible(false);
+			}
+		});
+		return mainPane;
 	}
 	
 	public void update(Observable o, String[] arg) {
