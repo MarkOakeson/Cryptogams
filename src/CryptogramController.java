@@ -68,6 +68,12 @@ public class CryptogramController extends Observable{
      */
 	public void makeReplacement(String letterToReplace, String replacementLetter) {
 		model.setReplacement(letterToReplace, replacementLetter);
+		System.out.println("MAde it to Cotroller");
+		String[] arr = new String[2];
+		arr[0] = letterToReplace;
+		arr[1] = replacementLetter;
+		setChanged();
+		notifyObservers(arr);
 	}
 	
 	

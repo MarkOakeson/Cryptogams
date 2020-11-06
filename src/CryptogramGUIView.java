@@ -16,14 +16,17 @@ public class CryptogramGUIView extends Application implements Observer {
 	private static CryptogramController control;
 	public CryptogramGUIView() {
 		this.control = new CryptogramController(new CryptogramModel());
+		control.addObserver(this);
 	}
 	public static void main(String[] args) {
 		System.out.println("MAIN");
+		
 		launch(args);
 	}
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		System.out.println("Start");
+		
 		BorderPane main = new BorderPane();
 		GridPane rightSide = new GridPane();
 
@@ -116,14 +119,19 @@ public class CryptogramGUIView extends Application implements Observer {
 			}
 			else {
 				tField = new TextField();
+				System.out.println("HUH");
 			}
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			tField.setOnKeyPressed(event -> {
 				String l = event.getCode().toString();
+				System.out.println(l);
 				String[] arr = new String[2];
 				arr[0] = label.getText();
 				arr[1] = l;
-				update(control, arr);
+				control.makeReplacement(label.getText(), l);
+				//control.notifyObservers();
+				//update(control, arr);
+				
 			});
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
@@ -142,12 +150,14 @@ public class CryptogramGUIView extends Application implements Observer {
 	
 	@Override
 	public void update(Observable o, Object arg) {
-		String[] arr = (String[]) arg;
-		String toRemove =  arr[0];
-		String toReplace = arr[1];
-		control.makeReplacement(toRemove, toReplace);
-		
+		//String[] arr = (String[]) arg;
+		String[] hehe = (String[]) arg;
+		System.out.println("UPDATE");
+		System.out.println(hehe[0]);
+		System.out.println(hehe[1]);
+//		updateHelp();
 	}
+
 	
 
 
