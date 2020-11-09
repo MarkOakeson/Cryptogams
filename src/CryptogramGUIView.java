@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Observable;
@@ -14,8 +15,18 @@ import javafx.scene.layout.*;
 
 public class CryptogramGUIView extends Application implements Observer {
 	private static CryptogramController control;
+	private ArrayList<VBox> letters;
+	private ArrayList<TextField> tFieldList;
+	private ArrayList<Label> labels;
+	private String quote;
 	public CryptogramGUIView() {
-		this.control = new CryptogramController(new CryptogramModel());
+		CryptogramController control1 = new CryptogramController(new CryptogramModel());
+		this.control = control1;
+		this.letters = new ArrayList<VBox>();
+		this.labels = new ArrayList<Label>();
+		this.tFieldList = new ArrayList<TextField>();
+		this.quote = control.getEncryptedQuote();
+		getLetters(quote);
 		control.addObserver(this);
 	}
 	public static void main(String[] args) {
@@ -29,10 +40,12 @@ public class CryptogramGUIView extends Application implements Observer {
 		
 		BorderPane main = new BorderPane();
 		GridPane rightSide = new GridPane();
-
-		GridPane cryptoText = setCryptogramText();
-	
 		setNewPuzzle(rightSide);
+	
+		GridPane cryptoText = setCryptogramText();
+		
+		
+		
 		setHint(rightSide);
 		
 		main.setCenter(cryptoText);
@@ -89,55 +102,71 @@ public class CryptogramGUIView extends Application implements Observer {
 				frequency.setVisible(false);
 			}
 		});
+		hintButton.setOnAction(event -> {
+			String[] arr = control.giveHint();
+			control.makeReplacement(arr[0], arr[1]);
+		});
 		
 	}
 	
-	private void setNewPuzzle(GridPane rightSide) {
+	public void setNewPuzzle(GridPane rightSide) {
 		Button newPuzzle = new Button();
 		newPuzzle.setText("New Puzzle");
 		rightSide.add(newPuzzle, 0, 0);
+		GridPane g = null;
+		newPuzzle.setOnAction(event -> {
+			System.err.println(control.getUsersProgress());
+			this.control = new CryptogramController(new CryptogramModel());
+			this.letters = new ArrayList<VBox>();
+			this.labels = new ArrayList<Label>();
+			this.tFieldList = new ArrayList<TextField>();
+			this.quote = control.getEncryptedQuote();
+			getLetters(quote);
+		});
 	}
 	
-	
+	private void getLetters(String quote) {
+		for(int i = 0; i < quote.length();i++) {
+			letters.add(new VBox());
+			labels.add(new Label());
+			tFieldList.add(new TextField());
+		}
+	}
 	public GridPane setCryptogramText() {
 		GridPane gridPane = new GridPane();
-		String test = control.getEncryptedQuote();
 		HashSet<String> puncSet = new HashSet<String>();
 		puncSet.add(" ");
 		puncSet.add("-");
 		puncSet.add(".");
 		puncSet.add("\'");
 		int row = 0;
-		for(int i = 0; i < test.length(); i++) {
-			VBox vbox = new VBox();
-			TextField tField;
-			String letter = Character.toString(test.charAt(i));
-			Label label = new Label(letter);
+		for(int i = 0; i < letters.size(); i++) {
+			VBox vbox = letters.get(i);
+			TextField text = tFieldList.get(i);
+			String letter = Character.toString(quote.charAt(i));
+			Label label = labels.get(i);
+			label.setText(letter);
 			if(puncSet.contains(letter)) {
-				tField = new TextField(letter);
-				tField.setDisable(true);
+				text.setText(letter);
+				text.setDisable(true);
 			}
-			else {
-				tField = new TextField();
-				System.out.println("HUH");
-			}
-			///////////////////////////////////////////////////////////////////////////////////////////////////
-			tField.setOnKeyPressed(event -> {
+
+			text.setOnKeyReleased(event -> {
+				
 				String l = event.getCode().toString();
 				System.out.println(l);
 				String[] arr = new String[2];
 				arr[0] = label.getText();
 				arr[1] = l;
-				control.makeReplacement(label.getText(), l);
-				//control.notifyObservers();
-				//update(control, arr);
 				
+				control.makeReplacement(label.getText(), l);
+				event.consume();
 			});
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			
-			vbox.getChildren().add(tField);
+			vbox.getChildren().add(text);
 			vbox.getChildren().add(label);
 			vbox.setAlignment(Pos.BOTTOM_CENTER);
+			System.err.println(letters);
 			gridPane.add(vbox, i%30, row);
 			if(i%30 == 29) {
 				row++;
@@ -155,7 +184,14 @@ public class CryptogramGUIView extends Application implements Observer {
 		System.out.println("UPDATE");
 		System.out.println(hehe[0]);
 		System.out.println(hehe[1]);
-//		updateHelp();
+		for(int i = 0; i < tFieldList.size();i++) {
+			System.out.println(labels.get(i).getText());
+			if(labels.get(i).getText().equals(hehe[0])) {
+				System.out.println("HEHE");
+				tFieldList.get(i).setText(hehe[1]);
+			}
+		}
+		//setCryptogramText();
 	}
 
 	

@@ -183,6 +183,9 @@ public class CryptogramModel extends Observable {
 	public void setReplacement(String key, String val) { /* add to our decryption attempt */
 		Character k = key.toUpperCase().charAt(0);
 		Character v = val.toUpperCase().charAt(0);
+//		System.out.println("MAde it to Model");
+//		System.out.println(key);
+//		System.out.println(val);
 		if(k =='.' || k == ',' || k == '\'' || k == '-') {
 			System.out.println("Cannot replace punctuation! Try again.");
 		}
@@ -292,16 +295,20 @@ public class CryptogramModel extends Observable {
      * Returns:
      *  @return a String stating a letter to remove and the letter to replace it
      */
-	public void hint() {
+	public String[] hint() {
+		String[] retval = new String[3];
 		HashSet<Character> set = getAnswerSetOfChars();
 		for(Character c: keyMap.keySet()) {
 			if(set.contains(c)) {
 				if(!userMap.containsValue(c)) {
-					System.out.println("Hint: Replace "+ keyMap.get(c)+" with " +c);
-					return;
+					retval[0] = Character.toString(keyMap.get(c));
+					retval[1] = Character.toString(c);
+					//System.out.println("Hint: Replace "+ keyMap.get(c)+" with " +c);
+					return retval;
 				}
 			}
 		}
+		return null;
 	}
 	
 	private HashSet<Character> getAnswerSetOfChars(){

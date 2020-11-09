@@ -34,6 +34,8 @@ public class CryptogramController extends Observable{
 
 	public CryptogramController (CryptogramModel model) { 
 		this.model = model;
+		setChanged();
+		notifyObservers();
 		}
 		
 		
@@ -133,8 +135,11 @@ public class CryptogramController extends Observable{
      * @return hint string
      * a String stating a letter to remove and the letter to replace it
      */
-	public void giveHint() {
-		model.hint();
+	public String[] giveHint() {
+		String[] arr = model.hint();
+		setChanged();
+		notifyObservers(arr);
+		return arr;
 	}
 	
 	

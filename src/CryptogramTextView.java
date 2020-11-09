@@ -18,6 +18,8 @@ public class CryptogramTextView {
 				System.out.println(control.getFreq());
 			}
 			else if(line[0].toUpperCase().equals("HINT")) {
+				String[] hint = control.giveHint();
+				System.out.println("Hint: Replace "+ hint[0]+" with " +hint[1]);
 				control.giveHint();
 			}
 			else if(line[0].toUpperCase().equals("EXIT")) {
