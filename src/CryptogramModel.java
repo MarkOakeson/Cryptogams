@@ -55,8 +55,8 @@ public class CryptogramModel extends Observable {
 			System.out.println("File not found");
 		}
     	this.freq = new HashMap<Character, Integer>();
-    	this.answerStr = fileScanner.nextLine();
-    	//this.answerStr = getRandomLine(fileScanner);
+    	//this.answerStr = fileScanner.nextLine();
+    	this.answerStr = getRandomLine(fileScanner);
     	this.keyMap = keyMapGenerator();
     	boolean check = checkDuplicates();
     	while(check) {
@@ -298,7 +298,6 @@ public class CryptogramModel extends Observable {
 				if(!userMap.containsValue(c)) {
 					retval[0] = Character.toString(keyMap.get(c));
 					retval[1] = Character.toString(c);
-					//System.out.println("Hint: Replace "+ keyMap.get(c)+" with " +c);
 					return retval;
 				}
 			}

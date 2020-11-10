@@ -37,6 +37,8 @@ public class CryptogramGUIView extends Application implements Observer {
 	private ArrayList<TextField> tFieldList;
 	private ArrayList<Label> labelList;
 	private String quote;
+	private Button hintButton;
+	private CheckBox checkBox;
 	
 	
 	public CryptogramGUIView() {
@@ -45,6 +47,8 @@ public class CryptogramGUIView extends Application implements Observer {
 		this.labelList = new ArrayList<Label>();
 		this.tFieldList = new ArrayList<TextField>();
 		this.quote = control.getEncryptedQuote();
+		this.hintButton = new Button();
+		this.checkBox = new CheckBox();
 		getLetters(quote);
 		control.addObserver(this);
 	}
@@ -52,7 +56,7 @@ public class CryptogramGUIView extends Application implements Observer {
 	
 	/**
 	 * Method starts the graphical user interface for the user
-	 * @param args String array, launches the initial args to run JavaFx and the gui
+	 * @param args String array, launches the initial args to run JavaFx and the GUI
 	 */
 	public static void main(String[] args) {
 		launch(args);
@@ -88,10 +92,10 @@ public class CryptogramGUIView extends Application implements Observer {
 	 * @param rightSide A GirdPlane that is used to set the right side of the interface
 	 */
 	private void setHint(GridPane rightSide) {
-		Button hintButton = new Button();
+		//Button hintButton = new Button();
 		hintButton.setText("Hint");
 		rightSide.add(hintButton, 0, 1);
-		CheckBox checkBox = new CheckBox("Show Hints");
+		checkBox.setText("Show Hints");
 		rightSide.add(checkBox, 0, 2);
 		GridPane frequency = new GridPane();
 		String freq = control.getFreq();
@@ -141,7 +145,7 @@ public class CryptogramGUIView extends Application implements Observer {
 	/**
 	 * Method creates a new Puzzle via the lambda function.  Inserts a "New Game" button 
 	 * on the right side of the canvas, and if the button is clicked, the game completely resets.
-	 * @param rightSide A GridPane used to set the right side of the stage for the gui
+	 * @param rightSide A GridPane used to set the right side of the stage for the GUI
 	 * @param primaryStage A Stage that is the main stage for the interface
 	 */
 	public void setNewPuzzle(GridPane rightSide, Stage primaryStage) {
@@ -150,7 +154,6 @@ public class CryptogramGUIView extends Application implements Observer {
 		rightSide.add(newPuzzle, 0, 0);
 		GridPane g = null;
 		newPuzzle.setOnAction(event -> {
-			System.err.println(control.getUsersProgress());
 			this.control = new CryptogramController(new CryptogramModel());
 			this.letterList = new ArrayList<VBox>();
 			this.labelList = new ArrayList<Label>();
@@ -194,11 +197,12 @@ public class CryptogramGUIView extends Application implements Observer {
 	 * input a character.  If the character at a position is punctuation, then the method sets 
 	 * those fields to disabled to not allow the user to change them.  The user inputs a letter and only 
 	 * one character will show for every mapping the user requested.  Each time a letter is entered, 
-	 * the game checks to see if the game is over.  If the game is over, then a new stage will pop up and
-	 * disable the current textfields, and will npt do anything until the user presses new game either 
+	 * the game will update all other textfields that have the letter the user wants to repalce 
+	 * and will checks to see if the game is over.  If the game is over, then a new stage will pop up and
+	 * disable the current TextFields, and will not do anything until the user presses new game either 
 	 * on the new stage or on the main stage.
 	 * @param primaryStage A Stage that is the main stage for the interface
-	 * @return  A GridPane that sets the interface with the cryptogram guess area/ encrypted quote
+	 * @return  A GridPane that sets the interface with the Cryptogram guess area/ encrypted quote
 	 */
 	public GridPane setCryptogramText(Stage primaryStage) {
 		GridPane gridPane = new GridPane();
@@ -226,25 +230,8 @@ public class CryptogramGUIView extends Application implements Observer {
 				String[] arr = new String[2];
 				arr[0] = label.getText();
 				arr[1] = l;
-				System.out.println("HEHE");
 				control.makeReplacement(label.getText(), l);
 				event.consume();
-				if(control.isGameOver()) {
-					System.out.println("YEEHAW");
-					for(int x  = 0; x < tFieldList.size(); x++) {
-						tFieldList.get(x).setDisable(true);
-					}
-					Stage stag = new Stage();
-					stag.setTitle("FX Test");
-					stag.setTitle("You Won!");
-					Button newGame = new Button();
-					newGame.setText("Play Again");
-					BorderPane g = new BorderPane();
-					g.setRight(newGame);
-					Scene scene = new Scene(g, 900, 400);
-					stag.setScene(scene);
-					stag.showAndWait();
-				}
 			});
 			
 			vbox.getChildren().add(text);
@@ -261,18 +248,41 @@ public class CryptogramGUIView extends Application implements Observer {
 	
 	
 	/**
-	 * Method overrides the Observer Interface to update the gui
+	 * Method overrides the Observer Interface to update the GUI.  Each time a letter is entered, 
+	 * the game will update all other TextField's that have the letter the user wants to replace 
+	 * and will checks to see if the game is over.  If the game is over, then a new stage will pop up and
+	 * disable the current TextFields, and will not do anything until the user presses new game on the main stage.
 	 * @param o An Observable Object to be updated
 	 * @param arg An Object that was used as a String array to update the textFields 
 	 * with the user's requested replacement
 	 */
 	@Override
 	public void update(Observable o, Object arg) {
-		String[] hehe = (String[]) arg;
+		String[] guess = (String[]) arg;
 		for(int i = 0; i < tFieldList.size();i++) {
-			if(labelList.get(i).getText().equals(hehe[0])) {
-				tFieldList.get(i).setText(hehe[1]);
+			if(labelList.get(i).getText().equals(guess[0])) {
+				tFieldList.get(i).setText(guess[1]);
 			}
+		}
+		if(control.isGameOver()) {
+			for(int x  = 0; x < tFieldList.size(); x++) {
+				tFieldList.get(x).setDisable(true);
+			}
+			checkBox.setDisable(true);
+			hintButton.setDisable(true);
+			Stage winStage = new Stage();
+			winStage.setTitle("You Won!");
+			Button newGame = new Button();
+			newGame.setText("OK");
+			newGame.setOnMouseClicked(event -> {
+				winStage.close();
+			});
+			BorderPane pane = new BorderPane();
+			pane.setCenter(newGame);
+			Scene scene = new Scene(pane, 900, 400);
+			winStage.setScene(scene);
+			winStage.showAndWait();
+			
 		}
 		
 	}
