@@ -3,12 +3,13 @@ import java.util.Observable;
 /**
 * @author Mark Oakeson
 * FILE: CryptogramController.java
-* @version ASSIGNMENT: Project 2 - Cryptography
+* @version ASSIGNMENT: Project 4 - Cryptography
 * COURSE: CSc 335; Fall 2020
 * PURPOSE: The purpose of this file is to be the controlling interface for the Cryptography project.
 * It connects the main function and the actual code for controlling the game.  Performs basic
 * functions for the user such as: telling if the game is over, processing the requested letter swap, 
-* and returning the users current attempt and the original encrypted string
+* and returning the users current attempt and the original encrypted string.  Class extends Observable 
+* in order to easily update the GUI in CryptogramGUIView.java
 * 
 *
 * USAGE: 
@@ -17,13 +18,18 @@ import java.util.Observable;
 * 
 * Cryptograms.java - The main function that runs the game, uses this file as the interface to call
 * 	the functions in CryptogramsModel
+* 
+* CryptogramTextView.java - The text/console based output for this game
+* 
+* CryptogramGUIView.java - The graphical user interface based output for this game
 */
 
 public class CryptogramController extends Observable{
 	private CryptogramModel model;
 	
 	/**
-     * Purpose: Constructor method that creates a CryptogramModel object
+     * Purpose: Constructor method that creates a CryptogramModel object and updates 
+     * observers 
      * 
      * Parameters:
      * @param:  A CryptogramModel object to use throughout the controller class
@@ -59,7 +65,9 @@ public class CryptogramController extends Observable{
 	
 	/**
      * Purpose: Method replaces the character in the encrypted string with 
-     * the letter to replace it with
+     * the letter to replace it with and updates observers.  Passes a String array
+     * to the update() funciton in the Observer interface to insert user's guess into the TextFields in the 
+     * graphic user interface
      * 
      * Parameters:
      * @param letterToReplace:  A char of the character in the encrypted string to remove
@@ -126,7 +134,8 @@ public class CryptogramController extends Observable{
 	
 	/**
      * Purpose: Method gives the user a hint by returning either a missed guess or
-     * an un-attempted guess to retry with different letters
+     * an un-attempted guess to retry with different letters.  Also updates Observers
+     * for the GUI
      * 
      * Parameters:
      * None

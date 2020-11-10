@@ -1,7 +1,7 @@
 /**
 * AUTHOR: Mark Oakeson
 * FILE: CryptogramModel.java
-* @version ASSIGNMENT: Project 1 - Cryptography
+* @version ASSIGNMENT: Project 4 - Cryptography
 * COURSE: CSc 335; Fall 2020
 * PURPOSE: The purpose of this file is to be the model for the Cryptography project.  This file
 * contains the code for creating the encryption HashMap, reading in the quotes from "quotes.txt",
@@ -14,6 +14,10 @@
 * 
 * Cryptograms.java - The main function that runs the game, uses this file as the interface to call
 * 	the functions in CryptogramsModel
+* 
+* * CryptogramTextView.java - The text/console based output for this game
+* 
+* CryptogramGUIView.java - The graphical user interface based output for this game
 */
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,11 +45,6 @@ public class CryptogramModel extends Observable {
      * and encrypts the answer string to another string.  Method will also check that the encryption map 
      * will not have duplicates
      * 
-     * Parameters:
-     * None
-     *
-     * Returns:
-     * None
      */
     public CryptogramModel() {
 	/* Read a random line from the quotes.txt file. Make the keys and set the answer */
@@ -64,7 +63,6 @@ public class CryptogramModel extends Observable {
     		this.keyMap = keyMapGenerator();
     		check = checkDuplicates();
     	}
-    	//System.out.println(check);
     	this.userMap = new HashMap<Character, Character>();
     	this.encStr = "";
     	stringEncrypt();
@@ -183,9 +181,6 @@ public class CryptogramModel extends Observable {
 	public void setReplacement(String key, String val) { /* add to our decryption attempt */
 		Character k = key.toUpperCase().charAt(0);
 		Character v = val.toUpperCase().charAt(0);
-//		System.out.println("MAde it to Model");
-//		System.out.println(key);
-//		System.out.println(val);
 		if(k =='.' || k == ',' || k == '\'' || k == '-') {
 			System.out.println("Cannot replace punctuation! Try again.");
 		}
